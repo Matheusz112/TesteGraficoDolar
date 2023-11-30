@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valor Aleatório simulado em dólar, Matheus Henrique.</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        #chart-container {
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        #myChart {
+            width: 100%;
+            height: 300px;
+            background-color: #1a1a1a;
+            border-color: rgba(0, 255, 0, 1);
+            border-width: 2px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+            animation: chartAnimation 2s ease-out;
+            transform-origin: 0% 100%;
+        }
+
+            #myChart .chart-line {
+                border-color: #00FF00 !important;
+                border-width: 2px !important;
+            }
+
+            #myChart.down .chart-line {
+                border-color: #00FF00 !important;
+            }
+
+        @keyframes chartAnimation {
+            0% {
+                transform: scaleY(0);
+            }
+
+            100% {
+                transform: scaleY(1);
+            }
+        }
+
+        #random-value {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #00FF00;
+        }
+
+        #currency-options {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+        }
+
+        .currency-option {
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+            .currency-option:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+
+        .selected {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .p{
+            font-size: 3px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="currency-options">
+        <div class="currency-option selected" onclick="changeCurrency('USD')">USD</div>
+        <div class="currency-option" onclick="changeCurrency('BRL')">BRL</div>
+    </div>
+
+    <div id="chart-container">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <p style="font-size: smaller;">Valor Aleatório simulado em dólar, Matheus Henrique <span id="random-span"></span></p>
+    <footer style="margin-top: 20px; text-align: center; color: #ffffff;">
+        <p>&copy; 2023 Matheus Henrique Nunes. Todos os direitos reservados.</p>
+    </footer>
+    <script>
+        var selectedCurrency = 'USD';
+
+        function changeCurrency(currency) {
+            selectedCurrency = currency;
+            document.querySelectorAll('.currency-option').forEach(function (el) {
+                el.classList.remove('selected');
+            });
+            document.querySelector('.currency-option[data-currency="' + currency + '"]').classList.add('selected');
+        }
+
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var data = {
+            labels: [],
+            datasets: [{
+                label: 'Valor Aleatório simulado em dólar, Matheus Henrique.',
+                backgroundColor: 'rgba(0, 255, 0, 0.2)',
+                borderColor: 'rgba(0, 255, 0, 1)',
+                borderWidth: 2,
+                data: [],
+                fill: true
+            }]
+        };
+
+        var options = {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        };
+
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: options,
+        });
+
+        function getRandomValue() {
+            return Math.floor(Math.random() * 101);
+        }
+
+        setInterval(function () {
+            var value = getRandomValue();
+            data.labels.push('');
+            data.datasets[0].data.push(value);
+
+            document.getElementById('random-span').textContent = value;
+
+            var lastIndex = data.datasets[0].data.length - 2;
+            var isDown = lastIndex >= 0 && data.datasets[0].data[lastIndex] > value;
+
+            document.getElementById('myChart').classList.toggle('down', isDown);
+
+            if (data.labels.length >= 20) {
+                data.labels = [];
+                data.datasets[0].data = [];
+            }
+
+            myChart.update();
+        }, 1500);
+    </script>
+
+</body>
+</html>
